@@ -49,10 +49,12 @@ def load(volume, path, interactive):
     """Load the locally saved volume to named docker-volume."""
     path, filename = utils.get_filename_from_path(path)
     allowed, extension = utils.allowed_files(filename)
+    extraction_command = utils.command_dict(extension)
+    print(extraction_command)
     if not allowed:
         rwt('File extension not allowed', traceback=Ellipsis)
-    load_cmd = 'docker run --rm --volume {0}:/mybackup -v {1}:/backup ubuntu bash -c "cd /mybackup && tar xvf /backup/{2} --strip 1"'.format(
-        volume, path, filename)
+    load_cmd = 'docker run --rm --volume {0}:/mybackup -v {1}:/backup ubuntu bash -c "cd /mybackup && {2} /backup/{3} --strip 1"'.format(
+        volume, path, extraction_command, filename)
     if utils.docker_volume_exist(volume) and click.confirm(utils.echo('The named volume already exists.\nDo you wish to overwrite?', 'red'), abort=True):
         utils.execute_subprocess(load_cmd)
     else:
