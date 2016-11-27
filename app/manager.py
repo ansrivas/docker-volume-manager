@@ -16,16 +16,27 @@ def cli():
 
 
 @cli.command()
-@click.option('--volume', required=True, type=click.STRING, help='The named volume to save locally. ')
-@click.option('--path',  default='./', type=click.Path(exists=True, file_okay=False, resolve_path=True, writable=True),
+@click.option('--volume',
+              required=True,
+              type=click.STRING,
+              help='The named volume to save locally. ')
+@click.option('--path',
+              default='./',
+              type=click.Path(exists=True,
+                              file_okay=False,
+                              resolve_path=True,
+                              writable=True),
               help='The path to save the docker volume as .tar.gz')
-@click.option('--interactive', default='True', type=click.BOOL, help='Run the script interactively')
+@click.option('--interactive',
+              default='True',
+              type=click.BOOL,
+              help='Run the script interactively')
 def save(volume, path, interactive):
     """Save your docker volume locally."""
     exporting_time = str(datetime.datetime.now().strftime("%Y-%m-%d_%H%M%S"))
     filename = volume + "_" + exporting_time + ".tar.gz"
-    save_cmd = "docker run --rm --volume {0}:/mybackup -v {1}:/backup ubuntu tar czvf /backup/{2} /mybackup".format(
-        volume, path, filename)
+
+    save_cmd = utils.save_cmd.format(volume, path, filename)
 
     if utils.docker_volume_exist(volume):
         if interactive:
@@ -41,10 +52,22 @@ def save(volume, path, interactive):
 
 
 @cli.command()
-@click.option('--volume', required=True, type=click.STRING, help='The named volume where the zip is to be uploaded. ')
-@click.option('--path',  required=True, type=click.Path(exists=True, file_okay=True, dir_okay=False, resolve_path=True, readable=True),
+@click.option('--volume',
+              required=True,
+              type=click.STRING,
+              help='The named volume where the zip is to be uploaded. ')
+@click.option('--path',
+              required=True,
+              type=click.Path(exists=True,
+                              file_okay=True,
+                              dir_okay=False,
+                              resolve_path=True,
+                              readable=True),
               help='The path to load the zip or tar or tar.gz from.')
-@click.option('--interactive', default='True', type=click.BOOL, help='Run the script interactively')
+@click.option('--interactive',
+              default='True',
+              type=click.BOOL,
+              help='Run the script interactively')
 def load(volume, path, interactive):
     """Load the locally saved volume to named docker-volume."""
     path, filename = utils.get_filename_from_path(path)
@@ -52,15 +75,19 @@ def load(volume, path, interactive):
     extraction_command = utils.command_dict[extension]
     if not allowed:
         rwt('File extension not allowed', traceback=Ellipsis)
-    load_cmd = 'docker run --rm --volume {0}:/mybackup -v {1}:/backup ubuntu bash -c "cd /mybackup && {2} /backup/{3} --strip 1"'.format(
-        volume, path, extraction_command, filename)
-    if utils.docker_volume_exist(volume) and click.confirm(utils.echo('The named volume already exists.\nDo you wish to overwrite?', 'red'), abort=True):
-        utils.execute_subprocess(load_cmd)
+
+    load_cmd = utils.load_cmd.format(volume, path, extraction_command, filename)
+
+    confirm_msg = utils.echo('The named volume already exists.\nDo you wish to overwrite?', 'red')
+    if utils.docker_volume_exist(volume):
+        print("evaluating true ??")
+        if click.confirm(confirm_msg, abort=True):
+            utils.execute_subprocess(load_cmd)
     else:
         if interactive and click.confirm('Safe to upload the named volume. Do you want to continue', abort=True):
             utils.execute_subprocess(load_cmd)
         else:
             utils.execute_subprocess(load_cmd)
 
-    utils.echo(msg='\nSuccessfully imported docker volume at: {0} as {1}\n'.format(
-        os.path.join(path, filename), volume), color='green')
+    msg = '\nSuccessfully imported docker volume at: {0} as {1}\n'.format(os.path.join(path, filename), volume)
+    utils.echo(msg, color='green')

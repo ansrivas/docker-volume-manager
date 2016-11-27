@@ -15,6 +15,9 @@ command_dict = OrderedDict((('.rar', 'unrar x'),
                             ('.tar.bz2', 'tar xvjf'))
                            )
 
+load_cmd = 'docker run --rm --volume {0}:/mybackup -v {1}:/backup ubuntu bash -c "cd /mybackup && {2} /backup/{3} --strip 1"'
+save_cmd = "docker run --rm --volume {0}:/mybackup -v {1}:/backup ubuntu tar czvf /backup/{2} /mybackup"
+
 
 def allowed_files(filename):
     """Check if the uploaded file is allowed in the extensions."""
