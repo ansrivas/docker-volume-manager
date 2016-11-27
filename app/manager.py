@@ -78,11 +78,9 @@ def load(volume, path, interactive):
 
     load_cmd = utils.load_cmd.format(volume, path, extraction_command, filename)
 
-    confirm_msg = utils.echo('The named volume already exists.\nDo you wish to overwrite?', 'red')
-    if utils.docker_volume_exist(volume):
-        print("evaluating true ??")
-        if click.confirm(confirm_msg, abort=True):
-            utils.execute_subprocess(load_cmd)
+    confirm_msg = 'The named volume already exists.\nDo you wish to overwrite?'
+    if utils.docker_volume_exist(volume) and click.confirm(confirm_msg, abort=True):
+        utils.execute_subprocess(load_cmd)
     else:
         if interactive and click.confirm('Safe to upload the named volume. Do you want to continue', abort=True):
             utils.execute_subprocess(load_cmd)
