@@ -20,7 +20,7 @@ Manage your named docker volumes using this simple script.
 
 4. To load an already saved local volume to a named-docker-volume:
 
-  `docker-volume-manager load --volume <new_volume_name> --path <absolute_path_to_you_saved_volume>`
+  `docker-volume-manager load --volume <new_volume_name> --path <absolute_path_to_your_saved_volume>`
 
 5. More options can be seen by using the help:
 

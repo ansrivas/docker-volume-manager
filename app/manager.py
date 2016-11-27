@@ -49,8 +49,7 @@ def load(volume, path, interactive):
     """Load the locally saved volume to named docker-volume."""
     path, filename = utils.get_filename_from_path(path)
     allowed, extension = utils.allowed_files(filename)
-    extraction_command = utils.command_dict(extension)
-    print(extraction_command)
+    extraction_command = utils.command_dict[extension]
     if not allowed:
         rwt('File extension not allowed', traceback=Ellipsis)
     load_cmd = 'docker run --rm --volume {0}:/mybackup -v {1}:/backup ubuntu bash -c "cd /mybackup && {2} /backup/{3} --strip 1"'.format(
