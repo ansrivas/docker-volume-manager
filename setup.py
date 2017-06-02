@@ -6,7 +6,7 @@ setup(
     py_modules=['app'],
     include_package_data=True,
     install_requires=[
-        'click'],
+        'click', 'future'],
     entry_points='''
         [console_scripts]
         docker-volume-manager=app.manager:cli
