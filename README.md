@@ -26,4 +26,22 @@ Manage your named docker volumes using this simple script.
 
   `docker-volume-manager --help`
 
+6. A simple use case could be to backup files:
+  ```bash
+  # cat backup_script.py
+  import os
+  import subprocess
+  import time
+
+  files = os.listdir('./')
+  tars = [f for f in files if f.endswith('.tar.gz')]
+  to_keep = sorted(tars)[-7:]
+  for tar in tars:
+      if tar not in to_keep:
+          os.remove(tar)
+
+  command = ["/usr/bin/docker-volume-manager", "save", "--volume", "your_docker_data_volume", "--interactive","False"]
+  subprocess.check_output(command )
+  ```
+
 ###### Disclaimer: Do not use it directly in a production environment. Test it locally before using it out there.
