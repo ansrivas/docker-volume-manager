@@ -29,8 +29,16 @@ setup(
     setup_requires=['pytest-runner', 'pytest'],
     tests_require=['pytest', 'pytest-cov', 'coverage'],
     packages=find_packages(),
+    zip_safe=False,
     author="Ankur Srivastava",
     download_url="https://github.com/ansrivas/docker-volume-manager/archive/1.0.0.tar.gz",
+    classifiers=[
+            "Programming Language :: Python :: 2",
+            "Programming Language :: Python :: 2.7",
+            "Programming Language :: Python :: 3",
+            "Programming Language :: Python :: 3.4",
+            "Programming Language :: Python :: 3.5",
+            "Programming Language :: Python :: 3.6", ],
     entry_points='''
         [console_scripts]
         docker-volume-manager=app.manager:cli
