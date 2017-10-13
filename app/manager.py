@@ -2,14 +2,17 @@
 # -*- coding: utf-8 -*-
 """Load and save your docker-volumes."""
 
+import os
+import app
+import sys
 import click
 import datetime
-import os
-import utils
+from app import utils
 from future.utils import raise_with_traceback as rwt
 
 
 @click.group()
+@click.version_option(app.__version__)
 def cli():
     """Showcase different options to backup and load docker volumes."""
     pass
@@ -38,17 +41,17 @@ def save(volume, path, interactive):
 
     save_cmd = utils.save_cmd.format(volume, path, filename)
 
-    if utils.docker_volume_exist(volume):
-        if interactive:
-            if click.confirm('Do you want to continue', abort=True):
-                utils.execute_subprocess(save_cmd)
-        else:
-            utils.execute_subprocess(save_cmd)
-        utils.echo(msg='\nSuccessfully exported docker volume at: {0}\n'.format(
-            os.path.join(path, filename)), color='green')
-    else:
+    if not utils.docker_volume_exist(volume):
         msg = "docker volume '{}' does not exist. ".format(volume)
         utils.echo(msg, 'red')
+        sys.exit(1)
+
+    if interactive:
+        click.confirm('Do you want to continue', abort=True)
+
+    utils.execute_subprocess(save_cmd)
+    utils.echo(msg='\nSuccessfully exported docker volume at: {0}\n'.format(
+        os.path.join(path, filename)), color='green')
 
 
 @cli.command()
@@ -79,13 +82,13 @@ def load(volume, path, interactive):
     load_cmd = utils.load_cmd.format(volume, path, extraction_command, filename)
 
     confirm_msg = 'The named volume already exists.\nDo you wish to overwrite?'
-    if utils.docker_volume_exist(volume) and click.confirm(confirm_msg, abort=True):
-        utils.execute_subprocess(load_cmd)
-    else:
-        if interactive and click.confirm('Safe to upload the named volume. Do you want to continue', abort=True):
-            utils.execute_subprocess(load_cmd)
-        else:
-            utils.execute_subprocess(load_cmd)
+    if utils.docker_volume_exist(volume):
+        click.confirm(confirm_msg, abort=True)
+
+    if interactive:
+        click.confirm('Safe to upload the named volume. Do you want to continue', abort=True)
+
+    utils.execute_subprocess(load_cmd)
 
     msg = '\nSuccessfully imported docker volume at: {0} as {1}\n'.format(os.path.join(path, filename), volume)
     utils.echo(msg, color='green')

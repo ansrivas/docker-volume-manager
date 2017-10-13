@@ -4,6 +4,7 @@
 
 import subprocess
 import click
+import os
 from collections import OrderedDict
 command_dict = OrderedDict((('.rar', 'unrar x'),
                             ('.gz', 'gunzip'),
@@ -33,6 +34,8 @@ def allowed_files(filename):
 
 def get_filename_from_path(path):
     """Get the correct path + filename from an absolute path."""
+    if not os.path.isabs(path):
+        raise Exception("`path` should be absolute path.")
     return path.rsplit('/', 1)
 
 
