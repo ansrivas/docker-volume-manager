@@ -2,9 +2,9 @@
 # -*- coding: utf-8 -*-
 """Set of utilities."""
 
-import subprocess
-import click
 import os
+import click
+import subprocess
 from collections import OrderedDict
 command_dict = OrderedDict((('.rar', 'unrar x'),
                             ('.gz', 'gunzip'),
@@ -16,8 +16,8 @@ command_dict = OrderedDict((('.rar', 'unrar x'),
                             ('.tar.bz2', 'tar xvjf'))
                            )
 
-load_cmd = 'docker run --rm --volume {0}:/mybackup -v {1}:/backup ubuntu bash -c "cd /mybackup && {2} /backup/{3} --strip 1"'
-save_cmd = "docker run --rm --volume {0}:/mybackup -v {1}:/backup ubuntu tar czvf /backup/{2} /mybackup"
+load_cmd = 'docker run --rm --volume {0}:/mybackup -v {1}:/backup alpine sh -c "cd /mybackup && {2} /backup/{3} --strip 1"'
+save_cmd = "docker run --rm --volume {0}:/mybackup -v {1}:/backup alpine tar czvf /backup/{2} /mybackup"
 
 
 def allowed_files(filename):

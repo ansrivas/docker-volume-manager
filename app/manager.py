@@ -58,7 +58,7 @@ def save(volume, path, interactive):
 @click.option('--volume',
               required=True,
               type=click.STRING,
-              help='The named volume where the zip is to be uploaded. ')
+              help='The named volume where the zip is to be uploaded. for eg. /my_saved_volume.tar.gz ')
 @click.option('--path',
               required=True,
               type=click.Path(exists=True,
