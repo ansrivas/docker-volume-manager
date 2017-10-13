@@ -12,6 +12,7 @@ def get_version():
 
 setup(
     name='docker-volume-manager',
+    description="Convenient cli app for docker volume management.",
     version=get_version(),
     py_modules=['app'],
     include_package_data=True,
@@ -19,6 +20,7 @@ setup(
     setup_requires=['pytest-runner', 'pytest'],
     tests_require=['pytest', 'pytest-cov', 'coverage'],
     packages=find_packages(),
+    download_url="https://github.com/ansrivas/docker-volume-manager/archive/1.0.0.tar.gz",
     entry_points='''
         [console_scripts]
         docker-volume-manager=app.manager:cli
