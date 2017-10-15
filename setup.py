@@ -31,7 +31,7 @@ setup(
     packages=find_packages(),
     zip_safe=False,
     author="Ankur Srivastava",
-    download_url="https://github.com/ansrivas/docker-volume-manager/archive/1.0.0.tar.gz",
+    download_url="https://github.com/ansrivas/docker-volume-manager/archive/{}.tar.gz".format(get_version()),
     classifiers=[
             "Programming Language :: Python :: 2",
             "Programming Language :: Python :: 2.7",
