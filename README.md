@@ -28,6 +28,28 @@ Commands:
   save  Save your docker volume locally.
 ```
 
+### Examples:
+- Upload to s3 ( or similarly compatible storage )
+
+  ```bash
+  $ docker volume ls
+  DRIVER              VOLUME NAME
+  local               my-named-docker-volume
+
+  $ docker-volume-manager save --path=. --env-path=.env --volume=my-named-docker-volume --to-s3  --interactive=False
+  ```
+
+- Optionally create a password protected volume using .env or populate it in the environment variable
+  ```bash
+  $ cat .env
+
+  URL=url-to-connect-to
+  ACCESS_KEY=my-s3-access-key
+  SECRET=my-s3-compatible-secret
+  SPACE=my-bucket-to-write-to
+  FILE_PASSWORD=my-file-will-be-7zipped-with-this-password
+  ```
+
 #### A simple use case could be to backup named docker-volumes:
   ```bash
   # cat backup_script.py
