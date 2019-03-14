@@ -32,15 +32,15 @@ def cli():
     "--to-s3",
     is_flag=True,
     help=(
-        "Upload the downloaded volume to s3. This expects a .env file with ACCESS_KEY, SECRET  and SPACE"
+        "Upload the downloaded volume to s3. This expects a .env file with ACCESS_KEY, SECRET and BUCKET"
         "name variables"
     ),
 )
 @click.option(
     "--env-path",
-    default=None,
+    default="./.env",
     type=click.Path(exists=True, file_okay=True, resolve_path=True),
-    help=("Path to the .env file which contains ACCESS_KEY, SECRET and SPACE and optional FILE_PASSWORD"),
+    help=("Path to the .env file which contains ACCESS_KEY, SECRET and BUCKET and optional FILE_PASSWORD"),
 )
 def save(volume, path, interactive, to_s3, env_path):
     """Save your docker volume locally."""
@@ -77,14 +77,14 @@ def save(volume, path, interactive, to_s3, env_path):
         endpoint_url = os.getenv("URL")
         access_key = os.getenv("ACCESS_KEY")
         secret = os.getenv("SECRET")
-        space = os.getenv("SPACE")
+        bucket = os.getenv("BUCKET")
         local_file_path = os.path.join(path, filename)
         filename_on_s3 = filename
-        if not all([endpoint_url, access_key, secret, space]):
+        if not all([endpoint_url, access_key, secret, bucket]):
             utils.error_msg_and_exit(("One of the environment variables is missing. "
-                                      "Options are : \n- URL\n- ACCESS_KEY\n- SECRET\n- SPACE\n"
+                                      "Options are : \n- URL\n- ACCESS_KEY\n- SECRET\n- BUCKET\n"
                                       "Please populate it or give a path to .env"))
-        upload_to_s3(endpoint_url, access_key, secret, space, local_file_path, filename_on_s3)
+        upload_to_s3(endpoint_url, access_key, secret, bucket, local_file_path, filename_on_s3)
 
     utils.success_msg(
         msg="\nSuccessfully exported docker volume at: {0}\n".format(os.path.join(path, filename))
@@ -136,19 +136,24 @@ def load(volume, path, interactive, password, env_path):
         from dotenv import load_dotenv
         load_dotenv(dotenv_path=env_path, verbose=True)
 
+    def create_load_cmd(volume, path, extraction_command, filename):
+        return utils.load_cmd_with_passwd.format(
+            volume=volume, path=path, extraction_command=extraction_command, filename=filename
+        )
+
     # priority goes to command line password override
     if password:
         extraction_command = extraction_command.format(password=password)
-        load_cmd = utils.load_cmd_with_passwd.format(
-            volume=volume, path=path, extraction_command=extraction_command, filename=filename
+        load_cmd = create_load_cmd(
+            volume, path, extraction_command, filename
         )
     else:
         # then it tries to read from the environment
         file_password = os.getenv("FILE_PASSWORD")
         if file_password:
             extraction_command = extraction_command.format(password=file_password)
-            load_cmd = utils.load_cmd_with_passwd.format(
-                volume=volume, path=path, extraction_command=extraction_command, filename=filename
+            load_cmd = create_load_cmd(
+                volume, path, extraction_command, filename
             )
         else:
             extraction_command = extraction_command.format(password="")

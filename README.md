@@ -46,7 +46,7 @@ Commands:
   URL=url-to-connect-to
   ACCESS_KEY=my-s3-access-key
   SECRET=my-s3-compatible-secret
-  SPACE=my-bucket-to-write-to
+  BUCKET=my-bucket-to-write-to
   FILE_PASSWORD=my-file-will-be-7zipped-with-this-password
   ```
 
